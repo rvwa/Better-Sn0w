@@ -27,6 +27,7 @@ import me.skitttyy.kami.impl.features.modules.render.*;
 import me.skitttyy.kami.impl.features.modules.render.fader.FadeRenderer;
 import me.skitttyy.kami.impl.gui.ClickGui;
 import net.minecraft.inventory.Inventory;
+import me.skitttyy.kami.impl.features.modules.combat.AutoSuicide;
 
 import java.util.Comparator;
 
