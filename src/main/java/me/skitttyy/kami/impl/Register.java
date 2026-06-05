@@ -135,6 +135,7 @@ public class Register
         FeatureManager.INSTANCE.getFeatures().add(new AntiHolecamp());
         FeatureManager.INSTANCE.getFeatures().add(new AimAssist());
         FeatureManager.INSTANCE.getFeatures().add(new AutoAnchor());
+        FeatureManager.INSTANCE.getFeatures().add(new AutoSuicide());
         FeatureManager.INSTANCE.getFeatures().add(new BowAim());
         FeatureManager.INSTANCE.getFeatures().add(new AntiPearl());
         FeatureManager.INSTANCE.getFeatures().add(new Catcher());
