@@ -1,9 +1,8 @@
 # TODO:
-Mouse keybindings -> Working
-Auto Suicide -> WIP
--# I don't know what next.
+Mouse Keybindings ✓
+AutoSuicide WIP
 
-
+-# IDK WHAT NEXT
 
 # How to build it?
 1. Open `Command Prompt`
