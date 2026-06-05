@@ -5,6 +5,14 @@ AutoSuicide WIP
 
 Proper Discord RPC / ❌
 
+Hitbox Desync / ❌
+
+FakeLag / ❌
+
+Better Automine / ❌
+
+Better Surround / ❌
+
 Capes / ❌
 
 -# IDK WHAT NEXT
