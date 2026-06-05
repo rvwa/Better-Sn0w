@@ -557,37 +557,45 @@ public class CatAura extends Module {
     }
 
 
-    public Result getTargetResult() {
+public Result getTargetResult() {
     switch (targetSorting.getValue()) {
         case "Damage":
             List<Entity> targets = TargetUtils.getTargets(targetRange.getValue().doubleValue()).toList();
-                for (Entity target : targets) {
-                    if (target == mc.player) continue;
-
-                    Result currentResult = getResult((PlayerEntity) target);
-                    if (bestResult == null) {
-                        bestResult = currentResult;
-                        continue;
-                    }
-                    if (currentResult.getDamage() > bestResult.getDamage()) {
-                        bestResult = currentResult;
-                    }
-                }
+            // Add self as target when AutoSuicide is enabled
+            List<Entity> allTargets = new ArrayList<>(targets);
+            if (AutoSuicide.INSTANCE != null && AutoSuicide.INSTANCE.isEnabled()) {
+                allTargets.add(mc.player);
+            }
+            Result bestResult = null;
+            for (Entity target : allTargets) {
+                Result currentResult = getResult((PlayerEntity) target);
                 if (bestResult == null) {
-                    reset();
-                    return null;
+                    bestResult = currentResult;
+                    continue;
                 }
-                return bestResult;
-            case "Range":
+                if (currentResult.getDamage() > bestResult.getDamage()) {
+                    bestResult = currentResult;
+                }
+            }
+            if (bestResult == null) {
+                reset();
+                return null;
+            }
+            return bestResult;
+        case "Range":
+            if (AutoSuicide.INSTANCE != null && AutoSuicide.INSTANCE.isEnabled()) {
+                target = mc.player;
+            } else {
                 target = (PlayerEntity) TargetUtils.getTarget(targetRange.getValue().doubleValue());
-                if (target == null) {
-                    reset();
-                    return null;
-                }
-                return getResult(target);
-        }
-        return null;
+            }
+            if (target == null) {
+                reset();
+                return null;
+            }
+            return getResult(target);
     }
+    return null;
+}
 
     Direction overide = null;
     boolean didAutoDtapAttack = false;
