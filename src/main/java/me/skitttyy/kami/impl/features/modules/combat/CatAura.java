@@ -558,10 +558,9 @@ public class CatAura extends Module {
 
 
     public Result getTargetResult() {
-        switch (targetSorting.getValue()) {
-            case "Damage":
-                List<Entity> targets = TargetUtils.getTargets(targetRange.getValue().doubleValue()).toList();
-                Result bestResult = null;
+    switch (targetSorting.getValue()) {
+        case "Damage":
+            List<Entity> targets = TargetUtils.getTargets(targetRange.getValue().doubleValue()).toList();
                 for (Entity target : targets) {
                     if (target == mc.player) continue;
 
