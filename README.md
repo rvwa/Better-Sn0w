@@ -1,7 +1,11 @@
 # TODO:
-Mouse Keybindings ✓
+Normal Mouse Keybindings Without any config.yml shit ✓
 
 AutoSuicide WIP
+
+Proper Discord RPC / ❌
+
+Capes / ❌
 
 -# IDK WHAT NEXT
 
