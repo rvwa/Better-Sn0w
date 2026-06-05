@@ -1,5 +1,6 @@
 # TODO:
 Mouse Keybindings ✓
+
 AutoSuicide WIP
 
 -# IDK WHAT NEXT
