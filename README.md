@@ -1,6 +1,8 @@
 # TODO:
 Normal Mouse Keybindings Without any config.yml shit / ✓
 
+Also un-binding with ESC (Right click isn't just the natural way) / ❌
+
 AutoSuicide / ✓
 
 Proper Discord RPC / ❌
