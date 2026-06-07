@@ -1,7 +1,7 @@
 # TODO:
-Normal Mouse Keybindings Without any config.yml shit ✓
+Normal Mouse Keybindings Without any config.yml shit / ✓
 
-AutoSuicide WIP
+AutoSuicide / ✓
 
 Proper Discord RPC / ❌
 
