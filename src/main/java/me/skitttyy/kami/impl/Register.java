@@ -29,6 +29,7 @@ import me.skitttyy.kami.impl.gui.ClickGui;
 import net.minecraft.inventory.Inventory;
 import me.skitttyy.kami.impl.features.modules.combat.AutoSuicide;
 import me.skitttyy.kami.impl.features.modules.movement.HitboxDesync;
+import me.skitttyy.kami.impl.features.modules.combat.FeetPlace;
 
 import java.util.Comparator;
 
