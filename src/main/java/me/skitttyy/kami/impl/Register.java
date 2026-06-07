@@ -116,7 +116,7 @@ public class Register
         FeatureManager.INSTANCE.getFeatures().add(new AutoXP());
         FeatureManager.INSTANCE.getFeatures().add(new CatAura());
         FeatureManager.INSTANCE.getFeatures().add(new AutoTotem());
-        FeatureManager.INSTANCE.getFeatures().add(new AutoFeetPlace());
+        FeatureManager.INSTANCE.getFeatures().add(new FeetPlace());
         FeatureManager.INSTANCE.getFeatures().add(new Lighter());
         FeatureManager.INSTANCE.getFeatures().add(new FastProjectile());
         FeatureManager.INSTANCE.getFeatures().add(new SelfTrap());
