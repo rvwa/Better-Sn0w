@@ -28,6 +28,7 @@ import me.skitttyy.kami.impl.features.modules.render.fader.FadeRenderer;
 import me.skitttyy.kami.impl.gui.ClickGui;
 import net.minecraft.inventory.Inventory;
 import me.skitttyy.kami.impl.features.modules.combat.AutoSuicide;
+import me.skitttyy.kami.impl.features.modules.movement.HitboxDesync;
 
 import java.util.Comparator;
 
@@ -196,6 +197,7 @@ public class Register
         FeatureManager.INSTANCE.getFeatures().add(new FastFall());
         FeatureManager.INSTANCE.getFeatures().add(new TpExploit());
         FeatureManager.INSTANCE.getFeatures().add(new PacketFly());
+        FeatureManager.INSTANCE.getFeatures().add(new HitboxDesync());
 
         // Render modules
         FeatureManager.INSTANCE.getFeatures().add(new Nametags());
