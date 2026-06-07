@@ -337,8 +337,6 @@ public class CatAura extends Module {
 
     @SubscribeEvent
     public void onEntityRemove(EntityEvent.Remove event) {
-
-        // crystal being removed from world
         if (event.getEntity() instanceof EndCrystalEntity) {
             if (hitCrystals.containsKey(event.getEntity().getId())) {
                 brokeCrystals.add(System.currentTimeMillis());
@@ -354,14 +352,11 @@ public class CatAura extends Module {
         if (rotate.getValue())
             if (PriorityManager.INSTANCE.isUsageLocked()) return;
 
-
         if (isMultiTask())
             return;
 
-
         if (predict.getValue() && event.getEntity() instanceof EndCrystalEntity entity)
             doPredict(entity);
-
     }
 
 
@@ -371,7 +366,6 @@ public class CatAura extends Module {
 
         if (event.getPacket() instanceof UpdateSelectedSlotC2SPacket packet) {
             if (packet.getSelectedSlot() == RotationManager.INSTANCE.serverSlot) return;
-
 
             if (!swapWait.getValue().equals("None")) {
                 StatusEffectInstance weaknessEffect = mc.player.getStatusEffect(StatusEffects.WEAKNESS);
@@ -389,15 +383,10 @@ public class CatAura extends Module {
     public void doPredict(EndCrystalEntity entity) {
         if (mc.player.squaredDistanceTo(entity.getX(), entity.getY(), entity.getZ()) <= MathUtil.square(breakRange.getValue().doubleValue())) {
 
-
             if (autoDtap.getValue() && isDtapping()) return;
 
             final float targetDamage = CrystalUtil.calculateDamage(target, new Vec3d(entity.getX(), entity.getY(), entity.getZ()), terrain.getValue(), false);
             if ((targetDamage > minDmg.getValue().doubleValue()) || (lethalCrystals.getValue().intValue() != 0 && (targetDamage * lethalCrystals.getValue().floatValue() >= target.getHealth() + target.getAbsorptionAmount()))) {
-
-//                if (mc.player.isSprinting() && AntiCheat.INSTANCE.acMode.getValue().equals("Strong"))
-//                    mc.player.setSprinting(false);
-
 
                 if (rotationsType.getValue().equals("Silent")) {
                     RotationUtils.doSilentRotate(RotationUtils.getRotationsTo(mc.player.getEyePos(), new Vec3d(entity.getX(), entity.getEyeY(), entity.getZ())));
@@ -416,7 +405,6 @@ public class CatAura extends Module {
                 if (doingAutoDtap)
                     didAutoDtapCrystal = true;
 
-
                 if (sequence.getValue().equals("Strong")) {
                     int crystalSlot = InventoryUtils.getHotbarItemSlot(Items.END_CRYSTAL);
                     if (crystalSlot == -1 && !offhand) {
@@ -426,7 +414,6 @@ public class CatAura extends Module {
                         }
                         return;
                     }
-
 
                     if (calcPos != null) {
                         placedOnspawn = false;
@@ -440,7 +427,6 @@ public class CatAura extends Module {
                 }
             }
         }
-
     }
 
     long startTime = 0;
@@ -449,12 +435,10 @@ public class CatAura extends Module {
         if (mc.player.isUsingItem()) {
             switch (multiTask.getValue()) {
                 case "Soft":
-
                     if (!mc.player.getActiveHand().equals(Hand.OFF_HAND) && !offhand) {
                         return true;
                     }
                     break;
-
                 case "Strong":
                     return true;
             }
@@ -481,27 +465,14 @@ public class CatAura extends Module {
         Color lineColor = lineColorS.getValue().getColor();
         switch (renderMode.getValue()) {
             case "Normal":
-                RenderUtil.renderBox(
-                        RenderType.FILL,
-                        new Box(renderPos),
-                        fillColor,
-                        fillColor
-                );
-                RenderUtil.renderBox(
-                        RenderType.LINES,
-                        new Box(renderPos),
-                        lineColor,
-                        lineColor
-                );
+                RenderUtil.renderBox(RenderType.FILL, new Box(renderPos), fillColor, fillColor);
+                RenderUtil.renderBox(RenderType.LINES, new Box(renderPos), lineColor, lineColor);
                 if (renderDamage.getValue())
-                    RenderBuffers.schedulePreRender(() ->
-                    {
+                    RenderBuffers.schedulePreRender(() -> {
                         RenderUtil.drawText(String.format("%.1f", renderDMG), new Box(renderPos).getCenter(), textScale.getValue().floatValue());
                     });
-
                 break;
             case "Glide":
-//                System.exit(0);
                 if (lastRenderPos == null || mc.player.squaredDistanceTo(renderBB.minX, renderBB.minY, renderBB.minZ) > MathUtil.square(targetRange.getValue().doubleValue())) {
                     lastRenderPos = renderPos;
                     renderBB = new Box(renderPos);
@@ -517,32 +488,16 @@ public class CatAura extends Module {
                 final double yDiff = renderPos.getY() - renderBB.minY;
                 final double zDiff = renderPos.getZ() - renderBB.minZ;
                 float movespeedlelell = glideSpeed.getValue().intValue() * 200;
-//                2000f
                 float decellerate = 0.8f;
                 float multiplier = timePassed / movespeedlelell * decellerate;
-                if (multiplier > 1.0f) {
-                    multiplier = 1.0f;
-                }
+                if (multiplier > 1.0f) multiplier = 1.0f;
                 renderBB = renderBB.offset(xDiff * (double) multiplier, yDiff * (double) multiplier, zDiff * (double) multiplier);
 
-
-                RenderUtil.renderBox(
-                        RenderType.FILL,
-                        renderBB,
-                        fillColor,
-                        fillColor
-                );
-                RenderUtil.renderBox(
-                        RenderType.LINES,
-                        renderBB,
-                        lineColor,
-                        lineColor
-                );
-
+                RenderUtil.renderBox(RenderType.FILL, renderBB, fillColor, fillColor);
+                RenderUtil.renderBox(RenderType.LINES, renderBB, lineColor, lineColor);
 
                 if (renderDamage.getValue())
-                    RenderBuffers.schedulePreRender(() ->
-                    {
+                    RenderBuffers.schedulePreRender(() -> {
                         RenderUtil.drawText(String.format("%.1f", renderDMG), renderBB.offset(0.0, 0, 0.0).getCenter(), textScale.getValue().floatValue());
                     });
 
@@ -551,51 +506,52 @@ public class CatAura extends Module {
                 } else {
                     timePassed += 50.0f;
                 }
-
                 break;
         }
     }
 
-
-public Result getTargetResult() {
-    switch (targetSorting.getValue()) {
-        case "Damage":
-            List<Entity> targets = TargetUtils.getTargets(targetRange.getValue().doubleValue()).toList();
-            // Add self as target when AutoSuicide is enabled
-            List<Entity> allTargets = new ArrayList<>(targets);
-            if (AutoSuicide.INSTANCE != null && AutoSuicide.INSTANCE.isEnabled()) {
-                allTargets.add(mc.player);
-            }
-            Result bestResult = null;
-            for (Entity target : allTargets) {
-                Result currentResult = getResult((PlayerEntity) target);
-                if (bestResult == null) {
-                    bestResult = currentResult;
-                    continue;
-                }
-                if (currentResult.getDamage() > bestResult.getDamage()) {
-                    bestResult = currentResult;
-                }
-            }
-            if (bestResult == null) {
-                reset();
-                return null;
-            }
-            return bestResult;
-        case "Range":
-            if (AutoSuicide.INSTANCE != null && AutoSuicide.INSTANCE.isEnabled()) {
-                target = mc.player;
-            } else {
-                target = (PlayerEntity) TargetUtils.getTarget(targetRange.getValue().doubleValue());
-            }
-            if (target == null) {
-                reset();
-                return null;
-            }
-            return getResult(target);
+    private boolean isAutoSuicide() {
+        return AutoSuicide.INSTANCE != null && AutoSuicide.INSTANCE.isEnabled();
     }
-    return null;
-}
+
+    public Result getTargetResult() {
+        switch (targetSorting.getValue()) {
+            case "Damage":
+                List<Entity> targets = TargetUtils.getTargets(targetRange.getValue().doubleValue()).toList();
+                List<Entity> allTargets = new ArrayList<>(targets);
+                if (isAutoSuicide()) {
+                    allTargets.add(mc.player);
+                }
+                Result bestResult = null;
+                for (Entity target : allTargets) {
+                    Result currentResult = getResult((PlayerEntity) target);
+                    if (bestResult == null) {
+                        bestResult = currentResult;
+                        continue;
+                    }
+                    if (currentResult.getDamage() > bestResult.getDamage()) {
+                        bestResult = currentResult;
+                    }
+                }
+                if (bestResult == null) {
+                    reset();
+                    return null;
+                }
+                return bestResult;
+            case "Range":
+                if (isAutoSuicide()) {
+                    target = mc.player;
+                } else {
+                    target = (PlayerEntity) TargetUtils.getTarget(targetRange.getValue().doubleValue());
+                }
+                if (target == null) {
+                    reset();
+                    return null;
+                }
+                return getResult(target);
+        }
+        return null;
+    }
 
     Direction overide = null;
     boolean didAutoDtapAttack = false;
@@ -605,7 +561,6 @@ public Result getTargetResult() {
     public void prepare() {
         offhand = mc.player.getOffHandStack().getItem() == Items.END_CRYSTAL;
 
-
         placeTimer.setDelay(placeDelay.getValue().longValue());
         breakTimer.setDelay(breakDelay.getValue().longValue());
         autoDtapTimer.setDelay(dtapDelay.getValue().longValue());
@@ -614,7 +569,6 @@ public Result getTargetResult() {
         cooldown.setDelay(800L);
         placeTargetRot = null;
         breakTargetRot = null;
-
 
         long nanoPre = System.nanoTime();
         Result result = getTargetResult();
@@ -632,38 +586,13 @@ public Result getTargetResult() {
         }
         if (!rotate.getValue()) return;
 
-
         overide = null;
-
-//        if (calcPos != null)
-//        {
-//            if (strictDirection.getValue() && placeTargetRot != null)
-//            {
-//                Direction side = BlockUtils.getPlaceableSideCrystal(calcPos, strictDirection.getValue());
-//                if (!side.equals(Direction.UP))
-//                {
-//                    float[] rots = RotationUtils.getBlockRotations(calcPos, Direction.UP);
-//
-//                    BlockHitResult bhr = RaytraceUtils.getBlockHitResult(rots[0], rots[1]);
-//                    if (bhr != null && bhr.getType() != HitResult.Type.MISS)
-//                    {
-//                        if (bhr.getBlockPos().equals(calcPos))
-//                        {
-//                            overide = bhr.getSide();
-//                            placeTargetRot = rots;
-//                        }
-//                    }
-//                }
-//            }
-//        }
-
 
         if (autoSwitch.getValue().equals("None") && breakTargetRot == null) {
             if (!offhand && mc.player.getInventory().getMainHandStack().getItem() != Items.END_CRYSTAL) {
                 return;
             }
         }
-
 
         if (target != null) {
             if (PlayerUtils.isBoostedByFirework() && AntiCheat.INSTANCE.strafeFix.getValue() && !target.isFallFlying())
@@ -691,7 +620,6 @@ public Result getTargetResult() {
 
         if (autoDtap.getValue() && target != null && (calcCrystal != null || calcPos != null)) {
             if (doingAutoDtap) {
-
                 if (didAutoDtapAttack && !didAutoDtapCrystal && !autoDtapTimer.isPassed()) {
                     return true;
                 }
@@ -703,35 +631,25 @@ public Result getTargetResult() {
                     didAutoDtapCrystal = false;
                 }
             }
-
         } else {
             if (autoDtapTimer.isPassed()) {
                 doingAutoDtap = false;
                 didAutoDtapAttack = false;
                 didAutoDtapCrystal = false;
             }
-
         }
 
         if (calcCrystal != null) {
-
             if (rotate.getValue() && breakTargetRot == null) return true;
 
             if (breakTimer.isPassed()) {
-
                 if (!swapWait.getValue().equals("None") && !swapTimer.isPassed()) return true;
-
 
                 StatusEffectInstance weaknessEffect = mc.player.getStatusEffect(StatusEffects.WEAKNESS);
                 StatusEffectInstance strengthEffect = mc.player.getStatusEffect(StatusEffects.STRENGTH);
                 boolean swapBack = false;
                 int curSlot = mc.player.getInventory().selectedSlot;
                 if (!antiWeakness.getValue().equals("None") && (weaknessEffect != null && (strengthEffect == null || strengthEffect.getAmplifier() <= weaknessEffect.getAmplifier()))) {
-                    /**
-                     * TODO: THIS
-                     * if (bestWeapon != -1 && RotationManager.INSTANCE.getServerSlot() != getBestWeapon())
-                     */
-
                     int bestWeapon = InventoryUtils.getSwordSlot();
                     if (bestWeapon != -1 && mc.player.getInventory().selectedSlot != bestWeapon) {
                         switch (antiWeakness.getValue()) {
@@ -745,7 +663,6 @@ public Result getTargetResult() {
                         }
                     }
                 }
-
 
                 if (rotationsType.getValue().equals("Silent")) {
                     RotationUtils.doSilentRotate(breakTargetRot);
@@ -764,11 +681,9 @@ public Result getTargetResult() {
                 if (swapBack)
                     InventoryUtils.switchToSlot(curSlot);
 
-
                 breakTimer.resetDelay();
                 if (setDeadMode.getValue().equals("Ghost")) {
-                    mc.executeSync(() ->
-                    {
+                    mc.executeSync(() -> {
                         mc.world.removeEntity(calcCrystal.getId(), Entity.RemovalReason.KILLED);
                     });
                 }
@@ -786,39 +701,16 @@ public Result getTargetResult() {
 
 
     boolean isDtapping() {
-
-
         if (doingAutoDtap) {
             if (didAutoDtapAttack && didAutoDtapCrystal && autoDtapTimer.isPassed()) {
                 return false;
             }
             return true;
-
-//            if (target == null) return false;
-//
-//
-//            if (calcPos == null && calcCrystal == null) return false;
-//
-//
-//            if (didAutoDtapAttack && !didAutoDtapCrystal && !autoDtapTimer.isPassed())
-//            {
-//                return true;
-//            }
-//            if (target.hurtTime != 0 && didAutoDtapCrystal && didAutoDtapAttack)
-//            {
-//                return true;
-//            } else if (didAutoDtapAttack && didAutoDtapCrystal)
-//            {
-//                return false;
-//            }
-//
-//            if(didAutoDtapAttack) return false;
         }
         return false;
     }
 
     public void placeCrystal() {
-
         if (placeFlag) {
             placeFlag = false;
             return;
@@ -828,13 +720,10 @@ public Result getTargetResult() {
             return;
 
         if (calcPos != null) {
-
             if (rotate.getValue() && placeTargetRot == null) return;
-
 
             if (placeTimer.isPassed()) {
                 if (swapWait.getValue().equals("Full") && !swapTimer.isPassed()) return;
-
 
                 boolean doSilent = false;
                 int crystalSlot = InventoryUtils.getHotbarItemSlot(Items.END_CRYSTAL);
@@ -859,7 +748,6 @@ public Result getTargetResult() {
                         doSilent = true;
                 }
 
-
                 if (!autoSwitch.getValue().contains("Silent")) {
                     if (!(mc.player.getInventory().getMainHandStack().getItem() instanceof EndCrystalItem) && !offhand) {
                         renderPos = null;
@@ -868,7 +756,6 @@ public Result getTargetResult() {
                 }
 
                 int oldSlot = mc.player.getInventory().selectedSlot;
-
 
                 if (doSilent) {
                     if (autoSwitch.getValue().equals("SilentBypass")) {
@@ -885,7 +772,6 @@ public Result getTargetResult() {
                     if (side.getAxis().isHorizontal()) {
                         vec = vec.add(0, 0.45, 0);
                     }
-
 
                     if (rotationsType.getValue().equals("Silent")) {
                         RotationUtils.doSilentRotate(placeTargetRot);
@@ -908,7 +794,6 @@ public Result getTargetResult() {
                     lastPos = calcPos;
                     placeTimer.resetDelay();
                 }
-
             }
             renderPos = calcPos;
             if (renderPos != null && renderMode.getValue().equals("Fade")) {
@@ -919,7 +804,6 @@ public Result getTargetResult() {
     }
 
     public PlaceResult getBestPlaceResult(PlayerEntity targetPlayer, Entity currentCalcCrystal) {
-
         BlockPos bestPos = null;
         BlockPos bestAntiFeetPlacePos = null;
         double bestAntiFeetPlaceDamage = 0.5D;
@@ -929,26 +813,21 @@ public Result getTargetResult() {
 
         for (final BlockPos pos : sphere) {
             if (CrystalUtil.canPlaceCrystal(pos, onePointTwelve.getValue())) {
-
-
                 AntiFeetPlaceResult feetPlaceResult = handleBBCrystal(pos, lastPos, currentCalcCrystal);
 
                 if (!feetPlaceResult.isPlaceAvailable()) continue;
-
-
                 if (!checkPlace(pos, false)) continue;
-
 
                 boolean doMiningIgnore = getMiningIgnore();
                 final float targetDamage = CrystalUtil.calculateDamage(targetPlayer, crystalDamageVec(pos), terrain.getValue(), doMiningIgnore);
                 if (bestDMG < targetDamage && targetDamage > minDmg.getValue().doubleValue()) {
                     final float selfDamage = CrystalUtil.calculateDamage(mc.player, crystalDamageVec(pos), terrain.getValue(), doMiningIgnore);
 
-                    if (selfDamage > maxSelfDmg.getValue().doubleValue()) continue;
+                    if (selfDamage > maxSelfDmg.getValue().doubleValue() && !isAutoSuicide()) continue;
 
-                    if ((selfDamage + 2 > mc.player.getHealth() + mc.player.getAbsorptionAmount() && noSuicide.getValue()))
+                    // Skip anti-suicide check when AutoSuicide is active
+                    if ((selfDamage + 2 > mc.player.getHealth() + mc.player.getAbsorptionAmount() && noSuicide.getValue()) && !isAutoSuicide())
                         continue;
-
 
                     if (feetPlaceResult.isAntiFeetPlace()) {
                         bestAntiFeetPlaceDamage = targetDamage;
@@ -988,7 +867,6 @@ public Result getTargetResult() {
 
 
     public boolean checkPlace(BlockPos pos, boolean ignore) {
-
         Direction side = ignore ? BlockUtils.getPlaceableSideCrystal(pos, strictDirection.getValue(), pos.up()) : BlockUtils.getPlaceableSideCrystal(pos, strictDirection.getValue());
 
         if (side == null)
@@ -999,7 +877,6 @@ public Result getTargetResult() {
         double distanceSq = vec.squaredDistanceTo(mc.player.getX(), mc.player.getY(), mc.player.getZ());
         if (distanceSq > MathUtil.square(placeRange.getValue().doubleValue()))
             return false;
-
 
         boolean trace = BlockUtils.placeTrace(pos);
         if (trace && distanceSq > MathUtil.square(placeWallsRange.getValue().doubleValue()))
@@ -1020,7 +897,6 @@ public Result getTargetResult() {
     }
 
     public void load(Result result) {
-
         target = result.target;
 
         if (InventoryUtils.getHotbarItemSlot(Items.END_CRYSTAL) != -1 || offhand) {
@@ -1028,12 +904,10 @@ public Result getTargetResult() {
                 calcPos = result.calcPos;
                 placeTargetRot = result.placeRots;
                 renderDMG = result.bestPlaceDMG;
-
             } else {
                 if (result.bestPlaceDMG == 0) {
                     renderPos = null;
                 }
-
             }
         } else {
             calcPos = null;
@@ -1071,7 +945,6 @@ public Result getTargetResult() {
                 return;
             }
 
-
             switch (rotationsType.getValue()) {
                 case "NCP":
                     if (mc.world.getNonSpectatingEntities(Entity.class, new Box(calcPos.add(0, 1, 0))).contains(calcCrystal)) {
@@ -1108,7 +981,6 @@ public Result getTargetResult() {
                     }
                     break;
             }
-
         }
     }
 
@@ -1119,12 +991,9 @@ public Result getTargetResult() {
 
     public float[] getPlaceRot(BlockPos pos) {
         if (pos == null) return null;
-
         if (!rotate.getValue()) return null;
 
-
         Direction side = BlockUtils.getPlaceableSideCrystal(pos, strictDirection.getValue());
-
 
         Vec3d vec = pos.toCenterPos().add(side.getVector().getX() * 0.5, side.getVector().getY() * 0.5, side.getVector().getZ() * 0.5);
         if (side.getAxis().isHorizontal()) {
@@ -1162,8 +1031,7 @@ public Result getTargetResult() {
         double d = pos2.getX();
         double e = pos2.getY();
         double f = pos2.getZ();
-        bb = new Box(d, e, f,
-                d + bb.maxX, e + bb.maxY, f + bb.maxZ);
+        bb = new Box(d, e, f, d + bb.maxX, e + bb.maxY, f + bb.maxZ);
 
         boolean isAntiFeetPlace = false;
         if (lastPos != null && lastPos.equals(pos)) {
@@ -1184,7 +1052,6 @@ public Result getTargetResult() {
                 if (entity instanceof PlayerEntity player) {
                     if (HitboxManager.INSTANCE.isServerCrawling(player)) {
                         Box serverBB = HitboxManager.INSTANCE.getCrawlingBoundingBox(player);
-
                         if (!bb.intersects(serverBB)) continue;
                     }
                 }
@@ -1195,11 +1062,9 @@ public Result getTargetResult() {
             }
         } else {
             for (Entity entity : mc.world.getNonSpectatingEntities(Entity.class, bb)) {
-
                 if (entity instanceof PlayerEntity player) {
                     if (HitboxManager.INSTANCE.isServerCrawling(player)) {
                         Box serverBB = HitboxManager.INSTANCE.getCrawlingBoundingBox(player);
-
                         if (!bb.intersects(serverBB)) continue;
                     }
                 }
@@ -1213,7 +1078,6 @@ public Result getTargetResult() {
 
                 if (!entity.isAlive() || entity.equals(currentCalcCrystal))
                     continue;
-
 
                 return new AntiFeetPlaceResult(false, isAntiFeetPlace);
             }
@@ -1230,19 +1094,17 @@ public Result getTargetResult() {
                 if (canBreakCrystal(crystal)) {
                     final float targetDamage = CrystalUtil.calculateDamage(targetPlayer, entity.getPos(), terrain.getValue(), false);
 
-                    // (isArmorBreaker(targetPlayer) && targetDamage >= minDmgArmor.getloatValue())
                     if (maxDamage < targetDamage && (targetDamage > minDmg.getValue().doubleValue()) || (lethalCrystals.getValue().intValue() != 0 && (targetDamage * lethalCrystals.getValue().floatValue() >= targetPlayer.getHealth() + targetPlayer.getAbsorptionAmount()))) {
                         final float selfDamage = CrystalUtil.calculateDamage(mc.player, entity.getPos(), terrain.getValue(), false);
 
-                        if (selfDamage > maxSelfDmg.getValue().doubleValue()) continue;
+                        if (selfDamage > maxSelfDmg.getValue().doubleValue() && !isAutoSuicide()) continue;
 
-                        if ((selfDamage + 2 > mc.player.getHealth() + mc.player.getAbsorptionAmount() && noSuicide.getValue()))
+                        // Skip anti-suicide check when AutoSuicide is active
+                        if ((selfDamage + 2 > mc.player.getHealth() + mc.player.getAbsorptionAmount() && noSuicide.getValue()) && !isAutoSuicide())
                             continue;
-
 
                         maxDamage = targetDamage;
                         bestCrystal = entity;
-
                     }
                 }
             }
@@ -1258,16 +1120,12 @@ public Result getTargetResult() {
 
     public boolean canRender() {
         if (calcPos == null) return false;
-
-
         int crystalSlot = InventoryUtils.getHotbarItemSlot(Items.END_CRYSTAL);
         return crystalSlot != -1 || offhand;
     }
 
 
     public boolean canBreakCrystal(EndCrystalEntity entity) {
-
-
         double distance = mc.player.getEyePos().distanceTo(entity.getPos().add(0, 1.700000047683716, 0));
 
         if (rotationsType.getValue().equals("MultiPoint")) {
@@ -1276,14 +1134,12 @@ public Result getTargetResult() {
             }
         }
 
-
         if (ticksExisted.getValue().intValue() != 0) {
             if (entity.age <= ticksExisted.getValue().intValue())
                 return false;
         }
 
         if (distance > breakRange.getValue().doubleValue()) return false;
-
 
         return (PlayerUtils.canEntityBeSeen(entity) || distance <= breakWallsRange.getValue().doubleValue());
     }
@@ -1293,25 +1149,20 @@ public Result getTargetResult() {
     }
 
     public void handlePage(String page) {
-        // "Render", "Calc", "Place", "Break", "Timing", "Dev"
-        // Render
         fillColorS.setActive(page.equals("Render"));
         lineColorS.setActive(page.equals("Render"));
         renderDamage.setActive(page.equals("Render"));
         textScale.setActive(page.equals("Render") && renderDamage.getValue());
-
         renderMode.setActive(page.equals("Render"));
         fadeTime.setActive(page.equals("Render") && renderMode.getValue().equals("Fade"));
         futureFade.setActive(page.equals("Render") && renderMode.getValue().equals("Fade"));
         openSpeed.setActive(page.equals("Render") && renderMode.getValue().equals("Glide"));
         glideSpeed.setActive(page.equals("Render") && renderMode.getValue().equals("Glide"));
 
-        // Calc
         minDmg.setActive(page.equals("Calc"));
         maxSelfDmg.setActive(page.equals("Calc"));
         targetRange.setActive(page.equals("Calc"));
         targetSorting.setActive(page.equals("Calc"));
-
         noSuicide.setActive(page.equals("Calc"));
         lethalCrystals.setActive(page.equals("Calc"));
         multiTask.setActive(page.equals("Calc"));
@@ -1320,50 +1171,34 @@ public Result getTargetResult() {
         terrain.setActive(page.equals("Calc"));
         armorAssume.setActive(page.equals("Calc"));
 
-
-        // Place
         placeRange.setActive(page.equals("Place"));
         placeWallsRange.setActive(page.equals("Place"));
-
         autoSwitch.setActive(page.equals("Place"));
         noGapSwitch.setActive(page.equals("Place") && autoSwitch.getValue().equals("Normal"));
         strictDirection.setActive(page.equals("Place"));
-
         onePointTwelve.setActive(page.equals("Place"));
         limit.setActive(page.equals("Place"));
 
-        //break
         breakRange.setActive(page.equals("Break"));
         breakWallsRange.setActive(page.equals("Break"));
         autoDtap.setActive(page.equals("Break"));
         autoHit.setActive(page.equals("Break") && autoDtap.getValue());
-
         dtapDelay.setActive(page.equals("Break") && autoDtap.getValue());
-
         ticksExisted.setActive(page.equals("Break"));
-
         setDeadMode.setActive(page.equals("Break"));
         predict.setActive(page.equals("Break"));
-
         antiWeakness.setActive(page.equals("Break"));
-
         inhibit.setActive(page.equals("Break"));
 
-        //misc
         rotate.setActive(page.equals("Misc"));
         rotationsType.setActive(page.equals("Misc") && rotate.getValue());
-
-
         swapWait.setActive(page.equals("Misc"));
         swapWaitDelay.setActive(page.equals("Misc") && !(swapWait.getValue().equals("None")));
 
-        // delays
         breakDelay.setActive(page.equals("Timing"));
         placeDelay.setActive(page.equals("Timing"));
         timing.setActive(page.equals("Timing"));
-
         sequence.setActive(page.equals("Timing"));
-
     }
 
     @SubscribeEvent
@@ -1374,7 +1209,6 @@ public Result getTargetResult() {
             try {
                 while (true) {
                     if (brokeCrystals.isEmpty()) break;
-
                     long firstCrystal = brokeCrystals.getFirst();
                     final long second = 1000L;
                     if (currentTimeMs - firstCrystal > second) brokeCrystals.remove();
@@ -1391,9 +1225,7 @@ public Result getTargetResult() {
     @SubscribeEvent(Priority.MODULE_LAST)
     public void onPlayerUpdate(TickEvent.PlayerTickEvent.Pre event) {
         if (NullUtils.nullCheck()) return;
-
         if (Phase.INSTANCE.isEnabled()) return;
-
 
         if (rotate.getValue())
             if (PriorityManager.INSTANCE.isUsageLocked()) return;
@@ -1403,14 +1235,12 @@ public Result getTargetResult() {
         if (rotate.getValue())
             if (AutoBreak.INSTANCE.didAction) return;
 
-
         if (isMultiTask()) {
             reset();
             return;
         }
 
         prepare();
-
 
         if (autoDtap.getValue() && autoHit.getValue() && calcPos == null && !mc.player.isUsingItem() && cooldown.isPassed()) {
             if (HoleUtils.isSurrounded(target.getBlockPos()) && !HoleUtils.isSurrounded(target.getBlockPos().up()) && mc.world.getBlockState(target.getBlockPos().up(2)).isAir()) {
@@ -1436,7 +1266,6 @@ public Result getTargetResult() {
             }
         }
 
-
         if (timing.getValue().equals("Soft"))
             interact();
     }
@@ -1454,7 +1283,6 @@ public Result getTargetResult() {
     public void beginAutoDtap() {
         if (!autoDtap.getValue()) return;
 
-
         doingAutoDtap = true;
         didAutoDtapAttack = true;
         didAutoDtapCrystal = false;
@@ -1465,18 +1293,15 @@ public Result getTargetResult() {
     @SubscribeEvent(Priority.MODULE_LAST)
     public void onPlayerUpdate(TickEvent.MovementTickEvent.Post event) {
         if (NullUtils.nullCheck()) return;
-
         if (Phase.INSTANCE.isEnabled()) return;
 
         if (rotate.getValue())
             if (PriorityManager.INSTANCE.isUsageLocked()) return;
 
-
         if (Blink.INSTANCE.isEnabled()) return;
 
         if (rotate.getValue())
             if (AutoBreak.INSTANCE.didAction) return;
-
 
         if (isMultiTask())
             return;
@@ -1490,7 +1315,6 @@ public Result getTargetResult() {
         super.onEnable();
         if (NullUtils.nullCheck()) return;
 
-
         renderPos = null;
         target = null;
         swapTimer.setDelay(swapWaitDelay.getValue().longValue());
@@ -1501,7 +1325,6 @@ public Result getTargetResult() {
         swapStop = false;
         breakTargetRot = null;
         placeTargetRot = null;
-
     }
 
     @Override
@@ -1509,7 +1332,6 @@ public Result getTargetResult() {
         super.onDisable();
         if (NullUtils.nullCheck()) return;
 
-
         renderPos = null;
         target = null;
         swapTimer.setDelay(swapWaitDelay.getValue().longValue());
@@ -1520,14 +1342,10 @@ public Result getTargetResult() {
         swapStop = false;
         breakTargetRot = null;
         placeTargetRot = null;
-
     }
 
     public void interact() {
-
-
         boolean breakCrystal = breakCrystal();
-
 
         int crystalSlot = InventoryUtils.getHotbarItemSlot(Items.END_CRYSTAL);
         if (crystalSlot != -1 || offhand) {
@@ -1537,7 +1355,6 @@ public Result getTargetResult() {
 
         if (placedOnspawn)
             placedOnspawn = false;
-
 
         if (hasRotated) {
             RotationUtils.silentSync();
@@ -1555,14 +1372,10 @@ public Result getTargetResult() {
         if (target != null)
             lastTargetName = target.getName().getString();
         return new DecimalFormat("0.##").format(lastTime) + "ms" + Formatting.GRAY + ", " + Formatting.WHITE + ((calcPos != null ? breakTimer.getResetTime() : 1) + "" + Formatting.GRAY + ", " + Formatting.WHITE + (new DecimalFormat("0.##").format(renderDMG)) + Formatting.GRAY + ", " + Formatting.WHITE + CRYSTALS_PER_SECOND);
-
-
     }
 
     @Override
     public String getDescription() {
         return "CatAura: Places and breaks crystals to kill players";
     }
-
-
 }
