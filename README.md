@@ -15,6 +15,8 @@ Better Surround / ❌
 
 Capes / ❌
 
+Support for 1.21.11 / ❌
+
 -# IDK WHAT NEXT
 
 # How to build it?
