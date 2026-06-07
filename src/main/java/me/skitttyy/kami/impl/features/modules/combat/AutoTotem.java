@@ -19,21 +19,25 @@ public class AutoTotem extends Module {
             .withDescriptor("Fast")
             .withValue(false)
             .register(this);
+
     Value<String> item = new ValueBuilder<String>()
             .withDescriptor("Item")
             .withValue("Totem")
             .withModes("Totem", "Gapple", "Crystal")
             .register(this);
+
     Value<Number> totemHealth = new ValueBuilder<Number>()
             .withDescriptor("Totem Health")
             .withValue(15)
             .withPlaces(1)
             .withRange(0, 36)
             .register(this);
+
     Value<Boolean> swordGap = new ValueBuilder<Boolean>()
             .withDescriptor("Sword Gap")
             .withValue(false)
             .register(this);
+
     Value<Number> totemSwordGap = new ValueBuilder<Number>()
             .withDescriptor("Sword Health")
             .withValue(15)
@@ -42,6 +46,7 @@ public class AutoTotem extends Module {
             .withParent(swordGap)
             .withParentEnabled(true)
             .register(this);
+
     Value<Number> delay = new ValueBuilder<Number>()
             .withDescriptor("Delay")
             .withValue(0)
@@ -62,13 +67,13 @@ public class AutoTotem extends Module {
     {
         if (NullUtils.nullCheck()) return;
 
-
         swapTimer.setDelay(delay.getValue().longValue());
 
         if (mc.currentScreen instanceof GenericContainerScreen && !(mc.currentScreen instanceof InventoryScreen))
         {
             return;
         }
+
         Item item = getItem();
         if (mc.player.getOffHandStack().getItem() != item && swapTimer.isPassed())
         {
@@ -77,10 +82,18 @@ public class AutoTotem extends Module {
         }
     }
 
-
     public Item getItem()
     {
-        if (swordGap.getValue() && (mc.player.getInventory().getMainHandStack().getItem().equals(Items.DIAMOND_SWORD) || mc.player.getInventory().getMainHandStack().getItem().equals(Items.NETHERITE_SWORD)) && mc.options.useKey.isPressed() && mc.currentScreen == null && mc.player.getHealth() + mc.player.getAbsorptionAmount() > totemSwordGap.getValue().doubleValue())
+        // Don't force totem when AutoSuicide is active — let the player die
+        if (AutoSuicide.INSTANCE != null && AutoSuicide.INSTANCE.isEnabled())
+            return getSelectedItem();
+
+        if (swordGap.getValue()
+                && (mc.player.getInventory().getMainHandStack().getItem().equals(Items.DIAMOND_SWORD)
+                || mc.player.getInventory().getMainHandStack().getItem().equals(Items.NETHERITE_SWORD))
+                && mc.options.useKey.isPressed()
+                && mc.currentScreen == null
+                && mc.player.getHealth() + mc.player.getAbsorptionAmount() > totemSwordGap.getValue().doubleValue())
         {
             return Items.ENCHANTED_GOLDEN_APPLE;
         } else if (mc.player.getHealth() + mc.player.getAbsorptionAmount() > totemHealth.getValue().doubleValue())
@@ -104,7 +117,6 @@ public class AutoTotem extends Module {
         {
             i = Items.ENCHANTED_GOLDEN_APPLE;
         }
-
         return i;
     }
 
@@ -112,7 +124,6 @@ public class AutoTotem extends Module {
     public String getHudInfo()
     {
         if (NullUtils.nullCheck()) return "";
-
         return InventoryUtils.getItemCount(Items.TOTEM_OF_UNDYING) + "";
     }
 
