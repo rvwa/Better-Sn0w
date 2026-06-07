@@ -17,6 +17,8 @@ Capes / ❌
 
 Support for 1.21.11 / ❌
 
+Macro Creator / ❌
+
 -# IDK WHAT NEXT
 
 # How to build it?
