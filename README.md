@@ -5,7 +5,7 @@ AutoSuicide / ✓
 
 Proper Discord RPC / ❌
 
-Hitbox Desync / ❌
+Hitbox Desync / ✓
 
 FakeLag / ❌
 
