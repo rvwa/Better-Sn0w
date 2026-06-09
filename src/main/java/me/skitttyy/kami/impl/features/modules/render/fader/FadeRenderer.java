@@ -26,28 +26,22 @@ public class FadeRenderer {
     public FadeRenderer()
     {
         KamiMod.EVENT_BUS.register(this);
-
     }
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldEvent event)
     {
-
         doCrystalRender();
         doAnchorRender();
-
-        doAutoFeetPlaceRender();
+        doFeetPlaceRender();
         doSelfTrapRender();
         doAutoPlaceRender();
-
         doScaffoldRender();
     }
 
     public void doCrystalRender()
     {
-
         if (!CatAura.INSTANCE.renderMode.getValue().equals("Fade")) return;
-
 
         Color fillColor = CatAura.INSTANCE.fillColorS.getValue().getColor();
         Color lineColor = CatAura.INSTANCE.lineColorS.getValue().getColor();
@@ -57,26 +51,13 @@ public class FadeRenderer {
             CatAura.oldPlacements = CatAura.oldPlacements.stream().filter(Objects::nonNull).distinct().filter((crystal) -> System.currentTimeMillis() - crystal.value() < CatAura.INSTANCE.fadeTime.getValue().longValue()).collect(Collectors.toList());
         if (renderPos != null && CatAura.INSTANCE.canRender() && CatAura.INSTANCE.target != null)
         {
-            RenderUtil.renderBox(
-                    RenderType.FILL,
-                    new Box(renderPos),
-                    fillColor,
-                    fillColor
-            );
-            RenderUtil.renderBox(
-                    RenderType.LINES,
-                    new Box(renderPos),
-                    lineColor,
-                    lineColor
-            );
+            RenderUtil.renderBox(RenderType.FILL, new Box(renderPos), fillColor, fillColor);
+            RenderUtil.renderBox(RenderType.LINES, new Box(renderPos), lineColor, lineColor);
 
             if (CatAura.INSTANCE.renderDamage.getValue())
-                RenderBuffers.schedulePreRender(() ->
-                {
+                RenderBuffers.schedulePreRender(() -> {
                     RenderUtil.drawText(String.format("%.1f", CatAura.INSTANCE.renderDMG), new Box(renderPos).getCenter(), CatAura.INSTANCE.textScale.getValue().floatValue());
                 });
-
-
         }
         if (CatAura.INSTANCE.futureFade.getValue() && renderPos != null)
         {
@@ -90,27 +71,15 @@ public class FadeRenderer {
                 Color fillFade = ColorUtil.interpolate((float) normal, ColorUtil.newAlpha(fillColor, 0), fillColor);
                 Color outlineFade = ColorUtil.interpolate((float) normal, ColorUtil.newAlpha(lineColor, 0), lineColor);
 
-                RenderUtil.renderBox(
-                        RenderType.FILL,
-                        new Box(pair.key()),
-                        fillFade,
-                        fillFade
-                );
-                RenderUtil.renderBox(
-                        RenderType.LINES,
-                        new Box(pair.key()),
-                        outlineFade,
-                        outlineFade
-                );
+                RenderUtil.renderBox(RenderType.FILL, new Box(pair.key()), fillFade, fillFade);
+                RenderUtil.renderBox(RenderType.LINES, new Box(pair.key()), outlineFade, outlineFade);
             }
         }
     }
 
     public void doAnchorRender()
     {
-
         if (!AutoAnchor.INSTANCE.renderMode.getValue().equals("Fade")) return;
-
 
         Color fillColor = AutoAnchor.INSTANCE.fillColorS.getValue().getColor();
         Color lineColor = AutoAnchor.INSTANCE.lineColorS.getValue().getColor();
@@ -120,26 +89,13 @@ public class FadeRenderer {
             AutoAnchor.oldPlacements = AutoAnchor.oldPlacements.stream().filter(Objects::nonNull).distinct().filter((crystal) -> System.currentTimeMillis() - crystal.value() < AutoAnchor.INSTANCE.fadeTime.getValue().longValue()).collect(Collectors.toList());
         if (renderPos != null && AutoAnchor.INSTANCE.target != null)
         {
-            RenderUtil.renderBox(
-                    RenderType.FILL,
-                    new Box(renderPos),
-                    fillColor,
-                    fillColor
-            );
-            RenderUtil.renderBox(
-                    RenderType.LINES,
-                    new Box(renderPos),
-                    lineColor,
-                    lineColor
-            );
+            RenderUtil.renderBox(RenderType.FILL, new Box(renderPos), fillColor, fillColor);
+            RenderUtil.renderBox(RenderType.LINES, new Box(renderPos), lineColor, lineColor);
 
             if (AutoAnchor.INSTANCE.renderDamage.getValue())
-                RenderBuffers.schedulePreRender(() ->
-                {
+                RenderBuffers.schedulePreRender(() -> {
                     RenderUtil.drawText(String.format("%.1f", AutoAnchor.INSTANCE.renderDMG), new Box(renderPos).getCenter(), AutoAnchor.INSTANCE.textScale.getValue().floatValue());
                 });
-
-
         }
         if (AutoAnchor.INSTANCE.futureFade.getValue() && renderPos != null)
         {
@@ -153,33 +109,23 @@ public class FadeRenderer {
                 Color fillFade = ColorUtil.interpolate((float) normal, ColorUtil.newAlpha(fillColor, 0), fillColor);
                 Color outlineFade = ColorUtil.interpolate((float) normal, ColorUtil.newAlpha(lineColor, 0), lineColor);
 
-                RenderUtil.renderBox(
-                        RenderType.FILL,
-                        new Box(pair.key()),
-                        fillFade,
-                        fillFade
-                );
-                RenderUtil.renderBox(
-                        RenderType.LINES,
-                        new Box(pair.key()),
-                        outlineFade,
-                        outlineFade
-                );
+                RenderUtil.renderBox(RenderType.FILL, new Box(pair.key()), fillFade, fillFade);
+                RenderUtil.renderBox(RenderType.LINES, new Box(pair.key()), outlineFade, outlineFade);
             }
         }
     }
-    public void doAutoFeetPlaceRender()
+
+    public void doFeetPlaceRender()
     {
-        if (!AutoFeetPlace.INSTANCE.render.getValue()) return;
+        if (!FeetPlace.INSTANCE.render.getValue()) return;
 
-
-        for (Map.Entry<BlockPos, Long> entry : AutoFeetPlace.INSTANCE.renderPositions.entrySet())
+        for (Map.Entry<BlockPos, Long> entry : FeetPlace.INSTANCE.renderPositions.entrySet())
         {
-            int fillAlpha = AutoFeetPlace.INSTANCE.fill.getValue().getAlpha();
-            int lineAlpha = AutoFeetPlace.INSTANCE.line.getValue().getAlpha();
+            int fillAlpha = FeetPlace.INSTANCE.fill.getValue().getAlpha();
+            int lineAlpha = FeetPlace.INSTANCE.line.getValue().getAlpha();
 
             long time = System.currentTimeMillis() - entry.getValue();
-            double normal = MathUtil.normalize(time, 0, AutoFeetPlace.INSTANCE.fadeTime.getValue().doubleValue());
+            double normal = MathUtil.normalize(time, 0, FeetPlace.INSTANCE.fadeTime.getValue().doubleValue());
             normal = MathHelper.clamp(normal, 0, 1);
             normal = -normal;
             normal++;
@@ -187,8 +133,8 @@ public class FadeRenderer {
             fillAlpha *= normal;
             lineAlpha *= normal;
 
-            Color fillColor = ColorUtil.newAlpha(AutoFeetPlace.INSTANCE.fill.getValue().getColor(), fillAlpha);
-            Color lineColor = ColorUtil.newAlpha(AutoFeetPlace.INSTANCE.line.getValue().getColor(), lineAlpha);
+            Color fillColor = ColorUtil.newAlpha(FeetPlace.INSTANCE.fill.getValue().getColor(), fillAlpha);
+            Color lineColor = ColorUtil.newAlpha(FeetPlace.INSTANCE.line.getValue().getColor(), lineAlpha);
 
             Box bb = new Box(entry.getKey());
 
@@ -196,7 +142,7 @@ public class FadeRenderer {
             RenderUtil.renderBox(RenderType.LINES, bb, lineColor, lineColor);
             if (fillAlpha == 0 && lineAlpha == 0)
             {
-                AutoFeetPlace.INSTANCE.renderPositions.remove(entry.getKey());
+                FeetPlace.INSTANCE.renderPositions.remove(entry.getKey());
             }
         }
     }
@@ -204,7 +150,6 @@ public class FadeRenderer {
     public void doAutoPlaceRender()
     {
         if (!AutoPlacer.INSTANCE.render.getValue()) return;
-
 
         for (Map.Entry<BlockPos, Long> entry : AutoPlacer.INSTANCE.renderPositions.entrySet())
         {
@@ -234,11 +179,9 @@ public class FadeRenderer {
         }
     }
 
-    
     public void doSelfTrapRender()
     {
         if (!SelfTrap.INSTANCE.render.getValue()) return;
-
 
         for (Map.Entry<BlockPos, Long> entry : SelfTrap.INSTANCE.renderPositions.entrySet())
         {
@@ -268,11 +211,9 @@ public class FadeRenderer {
         }
     }
 
-
     public void doScaffoldRender()
     {
         if (!Scaffold.INSTANCE.render.getValue()) return;
-
 
         for (Map.Entry<BlockPos, Long> entry : Scaffold.INSTANCE.renderPositions.entrySet())
         {
@@ -301,5 +242,4 @@ public class FadeRenderer {
             }
         }
     }
-    
 }
