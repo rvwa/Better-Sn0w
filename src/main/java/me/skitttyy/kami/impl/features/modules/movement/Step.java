@@ -16,7 +16,7 @@ import me.skitttyy.kami.api.utils.render.RenderTimer;
 import me.skitttyy.kami.api.value.Value;
 import me.skitttyy.kami.api.value.builder.ValueBuilder;
 import me.skitttyy.kami.api.utils.Timer;
-import me.skitttyy.kami.impl.features.modules.combat.AutoFeetPlace;
+import me.skitttyy.kami.impl.features.modules.combat.FeetPlace;
 import me.skitttyy.kami.impl.features.modules.player.MiddleClick;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.Items;
@@ -104,7 +104,6 @@ public class Step extends Module
             if (alternate.getValue() && height <= 1.5f)
                 return;
 
-            //
             final double[] offs = getStepOffsets(height);
             if (timer.getValue())
             {
@@ -116,9 +115,9 @@ public class Step extends Module
                 PacketManager.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(mc.player.prevX, mc.player.prevY + off, mc.player.prevZ, false));
             }
             stepTimer.resetDelay();
-            if (AutoFeetPlace.INSTANCE.isEnabled())
+            if (FeetPlace.INSTANCE.isEnabled())
             {
-                AutoFeetPlace.INSTANCE.setEnabled(false);
+                FeetPlace.INSTANCE.setEnabled(false);
             }
         }
 
@@ -197,7 +196,6 @@ public class Step extends Module
     public void onTick(TickEvent.ClientTickEvent event)
     {
         if (NullUtils.nullCheck()) return;
-
 
         stepTimer.setDelay(50);
         if (mc.player.isTouchingWater() || mc.player.isInLava() || mc.player.isFallFlying())
