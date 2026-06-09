@@ -13,9 +13,9 @@ FakeLag / ❌
 
 Better Automine / ❌
 
-Better Surround / ❌
+Better Surround / WIP
 
-Capes / ❌
+Capes / ✓
 
 Support for 1.21.11 / ❌
 
