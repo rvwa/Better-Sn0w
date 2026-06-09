@@ -13,6 +13,7 @@ import java.net.Proxy;
 
 @Mixin(MinecraftClient.class)
 public interface IMinecraftClient {
+
     @Accessor("currentFps")
     static int getFps()
     {
@@ -28,11 +29,13 @@ public interface IMinecraftClient {
 
     @Accessor("itemUseCooldown")
     int getItemUseCooldown();
+
     @Accessor("itemUseCooldown")
     void setItemUseCooldown(int itemUseCooldown);
+
     @Invoker
     boolean callDoAttack();
- 
+
     @Invoker
     void callDoItemUse();
 
@@ -40,8 +43,7 @@ public interface IMinecraftClient {
     ResourceReloadLogger getResourceReloadLogger();
 
     @Accessor("renderTickCounter")
-    RenderTickCounter.Dynamic getRenderTickCounter();
-
+    RenderTickCounter getRenderTickCounter();
 
     @Invoker("doAttack")
     boolean leftClick();
