@@ -1,7 +1,6 @@
 package me.skitttyy.kami.mixin.accessor;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.resource.ResourceReloadLogger;
 import net.minecraft.client.session.Session;
 import org.spongepowered.asm.mixin.Mixin;
@@ -41,9 +40,6 @@ public interface IMinecraftClient {
 
     @Accessor("resourceReloadLogger")
     ResourceReloadLogger getResourceReloadLogger();
-
-    @Accessor("renderTickCounter")
-    RenderTickCounter getRenderTickCounter();
 
     @Invoker("doAttack")
     boolean leftClick();
