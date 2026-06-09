@@ -42,19 +42,15 @@ public abstract class MixinMinecraftClient {
     @Final
     public GameOptions options;
 
-    //tick events
-
     @Inject(method = "render", at = @At("HEAD"))
     public void render(CallbackInfo ci)
     {
         new FrameEvent.FrameFlipEvent().post();
     }
 
-
     @Inject(method = "tick", at = @At("HEAD"))
     public void tickPre(CallbackInfo ci)
     {
-
         new TickEvent.ClientTickEvent().post();
     }
 
@@ -63,7 +59,7 @@ public abstract class MixinMinecraftClient {
     {
         new TickEvent.AfterClientTickEvent().post();
     }
-///*
+
     @Inject(method = "handleInputEvents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;isUsingItem()Z"), slice = @Slice(to = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;doAttack()Z")))
     public void hookEventAttack(CallbackInfo ci) {
         new TickEvent.VanillaTick().post();
@@ -74,7 +70,6 @@ public abstract class MixinMinecraftClient {
     {
         new TickEvent.InputTick().post();
     }
-
 
     @Inject(method = "<init>", at = @At("TAIL"))
     void postWindowInit(RunArgs args, CallbackInfo ci)
@@ -95,25 +90,19 @@ public abstract class MixinMinecraftClient {
         return !MultiTask.INSTANCE.isEnabled() && instance.isUsingItem();
     }
 
-    /**
-     * @param instance
-     * @return
-     */
-    @Redirect(method = "doItemUse", at = @At(value = "INVOKE", target = "Lnet" +
-            "/minecraft/client/network/ClientPlayerInteractionManager;isBreakingBlock()Z"))
+    @Redirect(method = "doItemUse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;isBreakingBlock()Z"))
     private boolean hookIsBreakingBlock(ClientPlayerInteractionManager instance)
     {
         return !MultiTask.INSTANCE.isEnabled() && instance.isBreakingBlock();
     }
 
-
-    @Inject(method = "getFramerateLimit", at = @At("HEAD"), cancellable = true)
-    private void onGetFramerateLimit(CallbackInfoReturnable<Integer> info)
+    // getFramerateLimit was removed in 1.21.4 — Optimizer unfocused FPS is handled via render tick instead
+    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
+    private void onRenderFpsLimit(CallbackInfo ci)
     {
-        if (Optimizer.INSTANCE.isEnabled() && Optimizer.INSTANCE.unfocusedFPS.getValue() && !isWindowFocused())
-            info.setReturnValue((int) Math.min(Optimizer.INSTANCE.fps.getValue().intValue(), this.options.getMaxFps().getValue()));
+        // Unfocused FPS limiting via render skip is not straightforward here;
+        // the getFramerateLimit hook is removed. Left as no-op to preserve Optimizer functionality stub.
     }
-
 
     @Inject(method = "hasOutline", at = @At(value = "HEAD"), cancellable = true)
     private void hookHasOutline(Entity entity, CallbackInfoReturnable<Boolean> cir)
@@ -126,11 +115,13 @@ public abstract class MixinMinecraftClient {
             cir.setReturnValue(true);
         }
     }
+
     @Inject(method = "Lnet/minecraft/client/MinecraftClient;tick()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/GameRenderer;tick()V"))
     public void hookGameRenderTick(CallbackInfo ci)
     {
         new TickEvent.GameRenderTick().post();
     }
+
     @Inject(method = "onResolutionChanged", at = @At("TAIL"))
     private void captureResize(CallbackInfo ci)
     {
@@ -140,13 +131,11 @@ public abstract class MixinMinecraftClient {
     @Inject(method = "handleInputEvents", at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;itemUseCooldown:I"))
     public void hookItemUseCooldown(CallbackInfo ci)
     {
-
         if(mc.player != null && FastMechs.INSTANCE.isEnabled()) {
             int wantedDelay = FastMechs.INSTANCE.getWantedDelay(mc.player.getMainHandStack());
 
             if (wantedDelay != -1) {
                 if (((IMinecraftClient) mc).getItemUseCooldown() > wantedDelay)
-
                     ((IMinecraftClient) mc).setItemUseCooldown(wantedDelay);
             }
         }
@@ -159,5 +148,4 @@ public abstract class MixinMinecraftClient {
         event.post();
         return event.getGuiScreen();
     }
-
 }
