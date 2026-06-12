@@ -78,7 +78,6 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntity
     @Shadow
     protected ItemStack activeItemStack;
 
-
     @Unique
     private float originalYaw;
 
@@ -114,19 +113,6 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntity
             setYaw(originalYaw);
         }
     }
-
-    //    @Inject(method = "tickMovement", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/LivingEntity;bodyTrackingIncrements:I"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;updateTrackedPosition(DDD)V"), to = @At(value = "FIELD", target = "Lnet/minecraft/entity/LivingEntity;serverX:D")))
-//    public void leakRotations(CallbackInfo ci)
-//    {
-//        Rotation rotation = RotationManager.INSTANCE.getRotation();
-//        //noinspection ConstantValue
-//        if (this.bodyTrackingIncrements > 0 && (Object) this == MinecraftClient.getInstance().player && rotation != null) {
-//            RotationManager.INSTANCE.fakeRotation = new Rotation(
-//                    (rotation.getYaw() + (float) MathHelper.wrapDegrees(this.serverYaw - (double) rotation.getYaw()) / (float) this.bodyTrackingIncrements) % 360F,
-//                    (rotation.getPitch() + (float) (this.serverPitch - (double) rotation.getPitch()) / (float) this.bodyTrackingIncrements) % 360F
-//            );
-//        }
-//    }
 
     @Inject(method = "consumeItem", at = @At(value = "INVOKE", target = "Lnet/" +
             "minecraft/item/ItemStack;finishUsing(Lnet/minecraft/world/World;" +
@@ -170,25 +156,12 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntity
         return instance.getYaw();
     }
 
-
-    @Redirect(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getPitch()F"))
-    public float replacePitch(LivingEntity instance)
-    {
-        //elytra fix
-        if ((Object) this == MinecraftClient.getInstance().player)
-        {
-            if (AntiCheat.INSTANCE.strafeFix.getValue() && MinecraftClient.getInstance().player != null && RotationManager.INSTANCE.getRotation() != null)
-            {
-                return RotationManager.INSTANCE.getRotation().getPitch();
-            }
-        }
-        return instance.getPitch();
-    }
+    // replacePitch removed - travel() no longer calls getPitch() directly in 1.21.4
+    // The elytra strafe fix is now handled via replaceVelocity (getRotationVector) below
 
     @Redirect(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getRotationVector()Lnet/minecraft/util/math/Vec3d;"))
     public Vec3d replaceVelocity(LivingEntity instance)
     {
-        //elytra fix
         if ((Object) this == MinecraftClient.getInstance().player)
         {
             if (AntiCheat.INSTANCE.strafeFix.getValue() && MinecraftClient.getInstance().player != null && RotationManager.INSTANCE.getRotation() != null)
@@ -198,7 +171,6 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntity
         }
         return instance.getRotationVector();
     }
-
 
     @Redirect(method = "turnHead", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getYaw()F"))
     public float replaceYaw_turnHead(LivingEntity instance)
@@ -236,7 +208,6 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntity
     {
         if (NullUtils.nullCheck()) return;
 
-
         boolean flying = cir.getReturnValue();
         boolean stoppedFlying = prevFlying && !flying;
         if (ElytraFly.INSTANCE.isEnabled() && ElytraFly.INSTANCE.mode.getValue().equals("Bounce") && stoppedFlying && !KamiMod.isBaritonePaused())
@@ -247,7 +218,6 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntity
         }
         prevFlying = flying;
     }
-
 
     @Inject(method = "onSpawnPacket", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/LivingEntity;headYaw:F", ordinal = 1))
     public void setHeadRotation(EntitySpawnS2CPacket packet, CallbackInfo ci)
@@ -338,3 +308,4 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntity
         kami_inInventory = inInventory;
     }
 }
+ENDOFFILE
