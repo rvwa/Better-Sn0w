@@ -31,19 +31,10 @@ public abstract class MixinClientWorld {
     private void hookRemoveEntity(int entityId, Entity.RemovalReason removalReason, CallbackInfo ci)
     {
         Entity entity = getEntityById(entityId);
-        if (entity == null)
-        {
-            return;
-        }
+        if (entity == null) return;
         new EntityEvent.Remove(entity, removalReason).post();
     }
 
-
-    @Inject(method = "getSkyColor", at = @At("HEAD"), cancellable = true)
-    private void getSkyColorHook(Vec3d cameraPos, float tickDelta, CallbackInfoReturnable<Vec3d> cir) {
-        if (CustomSky.INSTANCE.isEnabled()) {
-            cir.setReturnValue(new Vec3d(CustomSky.INSTANCE.fogColor.getValue().getGlRed(), CustomSky.INSTANCE.fogColor.getValue().getGlGreen(), CustomSky.INSTANCE.fogColor.getValue().getGlBlue()));
-        }
-    }
-
+    // getSkyColor was removed from ClientWorld in 1.21.4
+    // CustomSky fog color is handled via MixinBackgroundRenderer instead
 }
