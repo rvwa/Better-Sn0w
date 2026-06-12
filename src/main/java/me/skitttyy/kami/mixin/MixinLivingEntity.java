@@ -1,6 +1,5 @@
 package me.skitttyy.kami.mixin;
 
-
 import me.skitttyy.kami.api.event.events.LivingEvent;
 import me.skitttyy.kami.api.event.events.move.FallFlyingEvent;
 import me.skitttyy.kami.api.management.PacketManager;
@@ -32,65 +31,37 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static me.skitttyy.kami.api.wrapper.IMinecraft.mc;
 
-
 @Mixin(LivingEntity.class)
 public abstract class MixinLivingEntity extends Entity implements ILivingEntity
 {
-
     public MixinLivingEntity(EntityType<?> type, World world)
     {
         super(type, world);
     }
 
-    @Shadow
-    public int bodyTrackingIncrements;
+    @Shadow public int bodyTrackingIncrements;
+    @Shadow public double serverX;
+    @Shadow public double serverY;
+    @Shadow public double serverZ;
+    @Shadow public double serverYaw;
+    @Shadow protected double serverPitch;
+    @Shadow protected double serverHeadYaw;
+    @Shadow protected int headTrackingIncrements;
+    @Unique private Vec3d kami_oldServerPos;
+    @Unique private float kami_headPitch;
+    @Unique private float kami_prevHeadPitch;
+    @Unique private float kami_headYaw;
+    @Unique private float kami_prevHeadYaw;
+    @Unique private boolean kami_inInventory = false;
+    @Shadow protected ItemStack activeItemStack;
+    @Unique private float originalYaw;
 
-    @Shadow
-    public double serverX;
-
-    @Shadow
-    public double serverY;
-
-    @Shadow
-    public double serverZ;
-
-    @Shadow
-    public double serverYaw;
-
-    @Shadow
-    protected double serverPitch;
-    @Shadow
-    protected double serverHeadYaw;
-    @Shadow
-    protected int headTrackingIncrements;
-    @Unique
-    private Vec3d kami_oldServerPos;
-    @Unique
-    private float kami_headPitch;
-    @Unique
-    private float kami_prevHeadPitch;
-    @Unique
-    private float kami_headYaw;
-    @Unique
-    private float kami_prevHeadYaw;
-    @Unique
-    private boolean kami_inInventory = false;
-    @Shadow
-    protected ItemStack activeItemStack;
-
-    @Unique
-    private float originalYaw;
-
-    @Shadow
-    public abstract float getYaw(float tickDelta);
-
-    @Shadow
-    protected abstract void initDataTracker(DataTracker.Builder builder);
+    @Shadow public abstract float getYaw(float tickDelta);
+    @Shadow protected abstract void initDataTracker(DataTracker.Builder builder);
 
     @Inject(method = "jump", at = @At("HEAD"), cancellable = true)
     public void hookEventJumpPre(CallbackInfo ci)
     {
-        //noinspection ConstantValue
         if ((Object) this == MinecraftClient.getInstance().player)
         {
             LivingEvent.Jump jumpEvent = new LivingEvent.Jump(originalYaw = getYaw());
@@ -107,23 +78,16 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntity
     @Inject(method = "jump", at = @At("TAIL"))
     public void hookEventJumpPost(CallbackInfo ci)
     {
-        //noinspection ConstantValue
         if ((Object) this == MinecraftClient.getInstance().player)
         {
             setYaw(originalYaw);
         }
     }
 
-    @Inject(method = "consumeItem", at = @At(value = "INVOKE", target = "Lnet/" +
-            "minecraft/item/ItemStack;finishUsing(Lnet/minecraft/world/World;" +
-            "Lnet/minecraft/entity/LivingEntity;)" +
-            "Lnet/minecraft/item/ItemStack;", shift = At.Shift.AFTER))
+    @Inject(method = "consumeItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;finishUsing(Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;)Lnet/minecraft/item/ItemStack;", shift = At.Shift.AFTER))
     private void hookConsumeItem(CallbackInfo ci)
     {
-        if ((Object) this != mc.player)
-        {
-            return;
-        }
+        if ((Object) this != mc.player) return;
         LivingEvent.Eat event = new LivingEvent.Eat(activeItemStack);
         event.post();
     }
@@ -135,8 +99,7 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntity
         {
             FallFlyingEvent event = new FallFlyingEvent();
             event.post();
-            if (event.isCancelled())
-                return true;
+            if (event.isCancelled()) return true;
         }
         return instance.isFallFlying();
     }
@@ -147,17 +110,11 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntity
         if (AntiCheat.INSTANCE.visualize.getValue())
         {
             Rotation rotation = RotationManager.INSTANCE.getRotation();
-            //noinspection ConstantValue
             if ((Object) this == MinecraftClient.getInstance().player && rotation != null)
-            {
                 return rotation.getYaw();
-            }
         }
         return instance.getYaw();
     }
-
-    // replacePitch removed - travel() no longer calls getPitch() directly in 1.21.4
-    // The elytra strafe fix is now handled via replaceVelocity (getRotationVector) below
 
     @Redirect(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getRotationVector()Lnet/minecraft/util/math/Vec3d;"))
     public Vec3d replaceVelocity(LivingEntity instance)
@@ -165,9 +122,7 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntity
         if ((Object) this == MinecraftClient.getInstance().player)
         {
             if (AntiCheat.INSTANCE.strafeFix.getValue() && MinecraftClient.getInstance().player != null && RotationManager.INSTANCE.getRotation() != null)
-            {
                 return RotationManager.INSTANCE.getRotationVector();
-            }
         }
         return instance.getRotationVector();
     }
@@ -178,11 +133,8 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntity
         if (AntiCheat.INSTANCE.visualize.getValue())
         {
             Rotation rotation = RotationManager.INSTANCE.getRotation();
-            //noinspection ConstantValue
             if ((Object) this == MinecraftClient.getInstance().player && rotation != null)
-            {
                 return rotation.getYaw();
-            }
         }
         return instance.getYaw();
     }
@@ -200,14 +152,12 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntity
         kami_headPitch = getPitch();
     }
 
-    @Unique
-    private boolean prevFlying = false;
+    @Unique private boolean prevFlying = false;
 
     @Inject(method = "isFallFlying", at = @At("TAIL"), cancellable = true)
     public void tryReFlyOnLand(CallbackInfoReturnable<Boolean> cir)
     {
         if (NullUtils.nullCheck()) return;
-
         boolean flying = cir.getReturnValue();
         boolean stoppedFlying = prevFlying && !flying;
         if (ElytraFly.INSTANCE.isEnabled() && ElytraFly.INSTANCE.mode.getValue().equals("Bounce") && stoppedFlying && !KamiMod.isBaritonePaused())
@@ -224,7 +174,6 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntity
     {
         kami_headYaw = packet.getHeadYaw();
         kami_prevHeadYaw = kami_headYaw;
-
         kami_headPitch = packet.getPitch();
         kami_prevHeadPitch = kami_headPitch;
     }
@@ -242,70 +191,15 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntity
         kami_oldServerPos = new Vec3d(serverX, serverY, serverZ);
     }
 
-    @Override
-    public Vec3d kami_prevServerPos()
-    {
-        return kami_oldServerPos;
-    }
-
-    @Override
-    public float kami_getHeadPitch()
-    {
-        return kami_headPitch;
-    }
-
-    @Override
-    public void kami_setHeadPitch(float headPitch)
-    {
-        kami_headPitch = headPitch;
-    }
-
-    @Override
-    public float kami_getPrevHeadPitch()
-    {
-        return kami_prevHeadPitch;
-    }
-
-    @Override
-    public void kami_setPrevHeadPitch(float prevHeadPitch)
-    {
-        kami_prevHeadPitch = prevHeadPitch;
-    }
-
-    @Override
-    public float kami_getHeadYaw()
-    {
-        return kami_headYaw;
-    }
-
-    @Override
-    public void kami_setHeadYaw(float headYaw)
-    {
-        kami_headYaw = headYaw;
-    }
-
-    @Override
-    public float kami_getPrevHeadYaw()
-    {
-        return kami_prevHeadYaw;
-    }
-
-    @Override
-    public void kami_setPrevHeadYaw(float prevHeadYaw)
-    {
-        kami_prevHeadYaw = prevHeadYaw;
-    }
-
-    @Override
-    public boolean kami_isInInventory()
-    {
-        return kami_inInventory;
-    }
-
-    @Override
-    public void kami_setInInventory(boolean inInventory)
-    {
-        kami_inInventory = inInventory;
-    }
+    @Override public Vec3d kami_prevServerPos() { return kami_oldServerPos; }
+    @Override public float kami_getHeadPitch() { return kami_headPitch; }
+    @Override public void kami_setHeadPitch(float headPitch) { kami_headPitch = headPitch; }
+    @Override public float kami_getPrevHeadPitch() { return kami_prevHeadPitch; }
+    @Override public void kami_setPrevHeadPitch(float prevHeadPitch) { kami_prevHeadPitch = prevHeadPitch; }
+    @Override public float kami_getHeadYaw() { return kami_headYaw; }
+    @Override public void kami_setHeadYaw(float headYaw) { kami_headYaw = headYaw; }
+    @Override public float kami_getPrevHeadYaw() { return kami_prevHeadYaw; }
+    @Override public void kami_setPrevHeadYaw(float prevHeadYaw) { kami_prevHeadYaw = prevHeadYaw; }
+    @Override public boolean kami_isInInventory() { return kami_inInventory; }
+    @Override public void kami_setInInventory(boolean inInventory) { kami_inInventory = inInventory; }
 }
-ENDOFFILE
