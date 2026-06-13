@@ -116,16 +116,7 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntity
         return instance.getYaw();
     }
 
-    @Redirect(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getRotationVector()Lnet/minecraft/util/math/Vec3d;"))
-    public Vec3d replaceVelocity(LivingEntity instance)
-    {
-        if ((Object) this == MinecraftClient.getInstance().player)
-        {
-            if (AntiCheat.INSTANCE.strafeFix.getValue() && MinecraftClient.getInstance().player != null && RotationManager.INSTANCE.getRotation() != null)
-                return RotationManager.INSTANCE.getRotationVector();
-        }
-        return instance.getRotationVector();
-    }
+    // replaceVelocity (getRotationVector in travel) removed - method no longer called in 1.21.4
 
     @Redirect(method = "turnHead", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getYaw()F"))
     public float replaceYaw_turnHead(LivingEntity instance)
