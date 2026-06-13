@@ -29,4 +29,5 @@ Macro Creator / ❌
    ```Git clone https://github.com/rvwa/Better-Sn0w && cd Better-Sn0w```
 3. After it cloned and you're in the directory do:
    ```.\Gradlew build``` if on Windows
+   
    ```./Gradlew build``` if on Linux
