@@ -77,8 +77,7 @@ public class RenderUtil {
 
         if (bakedModel.isBuiltin() || stack.isOf(Items.TRIDENT) && !bl)
         {
-            ((IItemRenderer) mc.getItemRenderer()).getBuiltInModelItemRenderer().render(stack, renderMode, matrices, vertexConsumers, 15728895, OverlayTexture.DEFAULT_UV);
-        } else
+mc.getItemRenderer().renderItem(stack, renderMode, false, matrices, vertexConsumers, 15728895, OverlayTexture.DEFAULT_UV, mc.getItemRenderer().getModel(stack, null, null, 0));        } else
         {
             ((IItemRenderer) mc.getItemRenderer()).renderBakedItemModelAccess(bakedModel, stack, 15728895, OverlayTexture.DEFAULT_UV, matrices, getItemGlintConsumer(vertexConsumers, RenderLayers.getItemLayer(stack, false), stack.hasGlint()));
         }
