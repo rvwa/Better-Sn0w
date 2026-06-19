@@ -1,16 +1,11 @@
 package me.skitttyy.kami.mixin.accessor;
 
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Invoker;
 
+// renderBakedItemModel and builtinModelItemRenderer were removed in 1.21.4
+// IItemRenderer is kept as an empty stub so existing references compile
 @Mixin(ItemRenderer.class)
 public interface IItemRenderer
 {
-    @Invoker("renderBakedItemModel")
-    void renderBakedItemModelAccess(BakedModel model, ItemStack stack, int light, int overlay, MatrixStack matrices, VertexConsumer vertices);
 }
