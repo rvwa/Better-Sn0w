@@ -1,5 +1,8 @@
 # Currently doesn't launch. It's buildable but you can't launch it.
 
+## What is this project?
+Snow is shit and I love vibecoding so im making this shit little better
+
 
 # TODO:
 Normal Mouse Keybindings Without any config.yml shit / ✓
