@@ -30,7 +30,7 @@ public abstract class MixinDrawContext implements IDrawContext {
         adjustSize = newValue;
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "net/minecraft/item/ItemStack.isItemBarVisible()Z"),
+    @Inject(at = @At("HEAD"),
             method = "drawStackOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V")
     private void renderShulkerItemOverlay(TextRenderer renderer, ItemStack stack, int x, int y, @Nullable String countLabel, CallbackInfo info)
     {
