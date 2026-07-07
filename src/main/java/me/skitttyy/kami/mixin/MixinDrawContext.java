@@ -31,11 +31,9 @@ public abstract class MixinDrawContext implements IDrawContext {
     }
 
     @Inject(at = @At(value = "INVOKE", target = "net/minecraft/item/ItemStack.isItemBarVisible()Z"),
-            method = "drawItemInSlot(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V")
+            method = "drawStackOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V")
     private void renderShulkerItemOverlay(TextRenderer renderer, ItemStack stack, int x, int y, @Nullable String countLabel, CallbackInfo info)
     {
-
-
         if (!Tooltips.INSTANCE.isEnabled()) return;
 
         ContainerManager containerParser = new ContainerManager(stack);
@@ -49,7 +47,6 @@ public abstract class MixinDrawContext implements IDrawContext {
             iconRenderer = new IconRenderer(containerParser, displayStack, x, y);
             iconRenderer.renderOptional((DrawContext) (Object) this);
         }
-        // Display itemBar for containers. Ignore bundles - they already have this feature
         boolean isBundle = containerParser.getContainerType().equals(ContainerType.BUNDLE);
         if (Tooltips.INSTANCE.capacity.getValue() && !isBundle)
         {
@@ -77,7 +74,6 @@ public abstract class MixinDrawContext implements IDrawContext {
     private void injectedScale(Args args)
     {
 		if (!Tooltips.INSTANCE.isEnabled()) return;
-
 
         if (adjustSize)
         {
