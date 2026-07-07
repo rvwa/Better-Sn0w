@@ -30,6 +30,9 @@ public abstract class MixinDrawContext implements IDrawContext {
         adjustSize = newValue;
     }
 
+    // Disabled for 1.21.4: the target method's exact name/signature could not be
+    // reliably determined. Re-enable once the correct DrawContext method is confirmed.
+    /*
     @Inject(at = @At("HEAD"),
             method = "drawStackOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V")
     private void renderShulkerItemOverlay(TextRenderer renderer, ItemStack stack, int x, int y, @Nullable String countLabel, CallbackInfo info)
@@ -54,6 +57,7 @@ public abstract class MixinDrawContext implements IDrawContext {
             capacityBarRenderer.renderOptional((DrawContext) (Object) this);
         }
     }
+    */
 
     @ModifyArgs(method = "drawItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;IIII)V",
             at = @At(value = "INVOKE", target = "net/minecraft/client/util/math/MatrixStack.translate(FFF)V"))
